@@ -19,6 +19,7 @@ class Chessboard extends StatefulWidget {
   final void Function(types.ShortMove move)? onMove;
   final Color lightSquareColor;
   final Color darkSquareColor;
+  final Color highlightColor;
   final ShortMove? lastMove;
 
   Chessboard({
@@ -28,6 +29,7 @@ class Chessboard extends StatefulWidget {
     this.onMove,
     this.lightSquareColor = const Color.fromRGBO(240, 217, 181, 1),
     this.darkSquareColor = const Color.fromRGBO(181, 136, 99, 1),
+    this.highlightColor = Colors.yellow,
     this.lastMove,
   });
 
@@ -60,7 +62,7 @@ class _ChessboardState extends State<Chessboard> {
               return ChessSquare(
                 name: square,
                 color: color,
-                highlightColor: Colors.yellow,
+                highlightColor: widget.highlightColor,
                 size: squareSize,
                 highlight: _clickMove?.square == square ||
                     widget.lastMove?.from == square ||
