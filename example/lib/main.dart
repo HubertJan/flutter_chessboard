@@ -1,9 +1,24 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart' as cb;
+import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart'
+    as cb;
 
 import 'utils.dart';
+
+void main() async {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "App",
+      home: HomePage(),
+    );
+  }
+}
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,7 +26,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  String? _fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  cb.ShortMove? _lastMove;
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +40,13 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: cb.Chessboard(
-          fen: _fen,
+          fen: _fen!,
+          lastMove: _lastMove,
           size: size,
           orientation: cb.Color.WHITE,
           onMove: (move) {
-            final nextFen = makeMove(_fen, {
+            _lastMove = move;
+            final nextFen = makeMove(_fen!, {
               'from': move.from,
               'to': move.to,
               'promotion': 'q',
@@ -40,11 +58,11 @@ class _HomePageState extends State<HomePage> {
               });
 
               Future.delayed(Duration(milliseconds: 300)).then((_) {
-                final nextMove = getRandomMove(_fen);
-
+                final nextMove = getRandomMove(_fen!);
+                _lastMove = getShortMove(_fen!, nextMove);
                 if (nextMove != null) {
                   setState(() {
-                    _fen = makeMove(_fen, nextMove);
+                    _fen = makeMove(_fen!, nextMove);
                   });
                 }
               });

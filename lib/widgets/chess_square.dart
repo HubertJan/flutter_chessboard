@@ -4,18 +4,20 @@ import 'package:flutter_stateless_chessboard/widgets/chess_piece.dart';
 import 'package:flutter_stateless_chessboard/widgets/square.dart';
 
 class ChessSquare extends StatelessWidget {
-  final String name;
+  final String? name;
   final Color color;
+  final Color? highlightColor;
   final double size;
-  final types.Piece piece;
-  final void Function(types.ShortMove move) onDrop;
-  final void Function(types.HalfMove move) onClick;
+  final types.Piece? piece;
+  final void Function(types.ShortMove move)? onDrop;
+  final void Function(types.HalfMove move)? onClick;
   final bool highlight;
 
   ChessSquare({
     this.name,
-    @required this.color,
-    @required this.size,
+    required this.color,
+    required this.size,
+    this.highlightColor,
     this.highlight = false,
     this.piece,
     this.onDrop,
@@ -26,11 +28,11 @@ class ChessSquare extends StatelessWidget {
   Widget build(BuildContext context) {
     return DragTarget<types.HalfMove>(
       onWillAccept: (data) {
-        return data.square != name;
+        return data!.square != name;
       },
       onAccept: (data) {
         if (onDrop != null) {
-          onDrop(types.ShortMove(
+          onDrop!(types.ShortMove(
             from: data.square,
             to: name,
             promotion: types.PieceType.QUEEN,
@@ -38,15 +40,16 @@ class ChessSquare extends StatelessWidget {
         }
       },
       builder: (context, candidateData, rejectedData) {
-        return InkWell(
-          onTap: () {
+        return GestureDetector(
+          onPanDown: (_) {
             if (onClick != null) {
-              onClick(types.HalfMove(name, piece));
+              onClick!(types.HalfMove(name, piece));
             }
           },
           child: Square(
             size: size,
             color: color,
+            highlightColor: highlightColor,
             highlight: highlight,
             child: piece != null
                 ? ChessPiece(

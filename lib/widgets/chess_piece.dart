@@ -4,34 +4,31 @@ import 'package:flutter_stateless_chessboard/types.dart' as types;
 import 'package:flutter_stateless_chessboard/widgets/square.dart';
 
 class ChessPiece extends StatelessWidget {
-  final String squareName;
+  final String? squareName;
   final Color squareColor;
-  final types.Piece piece;
+  final types.Piece? piece;
   final double size;
 
   ChessPiece({
-    @required this.squareName,
-    @required this.squareColor,
-    @required this.piece,
-    @required this.size,
+    required this.squareName,
+    required this.squareColor,
+    required this.piece,
+    required this.size,
   });
 
   @override
   Widget build(BuildContext context) {
-    final pieceWidget = _buildPiece();
+    final pieceWidget = _buildPiece()!;
 
     return Draggable<types.HalfMove>(
       data: types.HalfMove(squareName, piece),
       child: pieceWidget,
       feedback: pieceWidget,
-      childWhenDragging: Square(
-        color: squareColor,
-        size: size,
-      ),
+      childWhenDragging: SizedBox(),
     );
   }
 
-  Widget _buildPiece() {
+  Widget? _buildPiece() {
     switch (piece.toString()) {
       case 'wr':
         return WhiteRook(size: size);

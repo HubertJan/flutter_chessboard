@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/types.dart' as types;
 import 'package:flutter_stateless_chessboard/utils.dart';
 import 'package:flutter_stateless_chessboard/widgets/chess_square.dart';
+import 'package:flutter_stateless_chessboard/types.dart' show ShortMove;
 
 export 'package:flutter_stateless_chessboard/types.dart';
+
+import 'package:chess/chess.dart' as ch;
 
 final zeroToSeven = List.generate(8, (index) => index);
 
@@ -13,17 +16,19 @@ class Chessboard extends StatefulWidget {
   final String fen;
   final double size;
   final types.Color orientation;
-  final void Function(types.ShortMove move) onMove;
+  final void Function(types.ShortMove move)? onMove;
   final Color lightSquareColor;
   final Color darkSquareColor;
+  final ShortMove? lastMove;
 
   Chessboard({
-    @required this.fen,
-    @required this.size,
+    required this.fen,
+    required this.size,
     this.orientation = types.Color.WHITE,
     this.onMove,
     this.lightSquareColor = const Color.fromRGBO(240, 217, 181, 1),
     this.darkSquareColor = const Color.fromRGBO(181, 136, 99, 1),
+    this.lastMove,
   });
 
   @override
@@ -33,7 +38,7 @@ class Chessboard extends StatefulWidget {
 }
 
 class _ChessboardState extends State<Chessboard> {
-  types.HalfMove _clickMove;
+  types.HalfMove? _clickMove;
 
   @override
   Widget build(BuildContext context) {
@@ -55,30 +60,32 @@ class _ChessboardState extends State<Chessboard> {
               return ChessSquare(
                 name: square,
                 color: color,
+                highlightColor: Colors.yellow,
                 size: squareSize,
-                highlight: _clickMove?.square == square,
+                highlight: _clickMove?.square == square ||
+                    widget.lastMove?.from == square ||
+                    widget.lastMove?.to == square,
                 piece: pieceMap[square],
                 onDrop: (move) {
                   if (widget.onMove != null) {
-                    widget.onMove(move);
+                    widget.onMove!(move);
                     setClickMove(null);
                   }
                 },
                 onClick: (halfMove) {
                   if (_clickMove != null) {
-                    if (_clickMove.square == halfMove.square) {
+                    if (_clickMove!.square == halfMove.square) {
                       setClickMove(null);
-                    } else if (_clickMove.piece.color ==
+                    } else if (_clickMove!.piece!.color ==
                         halfMove.piece?.color) {
                       setClickMove(halfMove);
                     } else {
-                      widget.onMove(types.ShortMove(
-                        from: _clickMove.square,
+                      widget.onMove!(types.ShortMove(
+                        from: _clickMove!.square,
                         to: halfMove.square,
                         promotion: types.PieceType.QUEEN,
                       ));
                     }
-                    setClickMove(null);
                   } else if (halfMove.piece != null) {
                     setClickMove(halfMove);
                   }
@@ -91,7 +98,7 @@ class _ChessboardState extends State<Chessboard> {
     );
   }
 
-  void setClickMove(types.HalfMove move) {
+  void setClickMove(types.HalfMove? move) {
     setState(() {
       _clickMove = move;
     });

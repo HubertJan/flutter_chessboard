@@ -32,16 +32,20 @@ packages:
   chess:
     dependency: "direct main"
     description:
-      name: chess
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "87f755d64ed78dea9312f1b00936077245f139d8"
+      url: "https://github.com/daniel-mf/chess.dart"
+    source: git
     version: "0.6.6"
   chess_vectors_flutter:
     dependency: "direct main"
     description:
-      name: chess_vectors_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "5f8f23e721e62c1b4db5cb8a07911e4f441abb90"
+      url: "https://github.com/loloof64/chess_vectors_flutter"
+    source: git
     version: "1.0.12"
   clock:
     dependency: transitive
@@ -101,7 +105,7 @@ packages:
       name: quiver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.5"
+    version: "3.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -155,7 +159,7 @@ packages:
       name: tuple
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "2.0.0"
   typed_data:
     dependency: transitive
     description:
@@ -171,5 +175,5 @@ packages:
     source: hosted
     version: "2.1.0"
 sdks:
-  dart: ">=2.12.0-0.0 <3.0.0"
+  dart: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
