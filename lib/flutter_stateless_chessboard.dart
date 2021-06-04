@@ -20,6 +20,7 @@ class Chessboard extends StatefulWidget {
   final Color lightSquareColor;
   final Color darkSquareColor;
   final Color highlightColor;
+  final Color secondHighlightColor;
   final ShortMove? lastMove;
 
   Chessboard({
@@ -30,6 +31,7 @@ class Chessboard extends StatefulWidget {
     this.lightSquareColor = const Color.fromRGBO(240, 217, 181, 1),
     this.darkSquareColor = const Color.fromRGBO(181, 136, 99, 1),
     this.highlightColor = Colors.yellow,
+    this.secondHighlightColor = Colors.orange,
     this.lastMove,
   });
 
@@ -63,9 +65,10 @@ class _ChessboardState extends State<Chessboard> {
                 name: square,
                 color: color,
                 highlightColor: widget.highlightColor,
+                secondHighlightColor: widget.secondHighlightColor,
                 size: squareSize,
-                highlight: _clickMove?.square == square ||
-                    widget.lastMove?.from == square ||
+                highlight: _clickMove?.square == square,
+                hightlightLastMove: widget.lastMove?.from == square ||
                     widget.lastMove?.to == square,
                 piece: pieceMap[square],
                 onDrop: (move) {
@@ -77,7 +80,7 @@ class _ChessboardState extends State<Chessboard> {
                 onClick: (halfMove) {
                   if (_clickMove != null) {
                     if (_clickMove!.square == halfMove.square) {
-                      setClickMove(null);
+                      setClickMove(halfMove);
                     } else if (_clickMove!.piece!.color ==
                         halfMove.piece?.color) {
                       setClickMove(halfMove);
