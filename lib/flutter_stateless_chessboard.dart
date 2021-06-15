@@ -8,6 +8,7 @@ import 'package:flutter_stateless_chessboard/widgets/chess_square.dart';
 import 'package:flutter_stateless_chessboard/types.dart' show ShortMove;
 
 export 'package:flutter_stateless_chessboard/types.dart';
+export 'package:flutter_stateless_chessboard/chessboard_controller.dart';
 
 import 'package:chess/chess.dart' as ch;
 
