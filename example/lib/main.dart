@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_stateless_chessboard/controller.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart'
     as cb;
 
@@ -26,8 +27,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? _fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  late ChessboardController _controller;
   cb.ShortMove? _lastMove;
+
+  @override
+  void initState() {
+    _controller = ChessboardController(
+        fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,33 +48,20 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: cb.Chessboard(
-          fen: _fen!,
-          lastMove: _lastMove,
+          controller: _controller,
           size: size,
           orientation: cb.Color.WHITE,
           onMove: (move) {
             _lastMove = move;
-            final nextFen = makeMove(_fen!, {
-              'from': move.from,
-              'to': move.to,
-              'promotion': 'q',
+            Future.delayed(Duration(milliseconds: 300)).then((_) {
+              final nextMove = getRandomMove(_controller.fen);
+              _controller.lastMove = getShortMove(_controller.fen, nextMove);
+              if (nextMove != null) {
+                setState(() {
+                  _controller.fen = makeMove(_controller.fen, nextMove)!;
+                });
+              }
             });
-
-            if (nextFen != null) {
-              setState(() {
-                _fen = nextFen;
-              });
-
-              Future.delayed(Duration(milliseconds: 300)).then((_) {
-                final nextMove = getRandomMove(_fen!);
-                _lastMove = getShortMove(_fen!, nextMove);
-                if (nextMove != null) {
-                  setState(() {
-                    _fen = makeMove(_fen!, nextMove);
-                  });
-                }
-              });
-            }
           },
         ),
       ),

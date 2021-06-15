@@ -3,6 +3,7 @@ library flutter_chessboard;
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/types.dart' as types;
 import 'package:flutter_stateless_chessboard/utils.dart';
+import 'package:flutter_stateless_chessboard/chessboard_controller.dart';
 import 'package:flutter_stateless_chessboard/widgets/chess_square.dart';
 import 'package:flutter_stateless_chessboard/types.dart' show ShortMove;
 
@@ -13,7 +14,6 @@ import 'package:chess/chess.dart' as ch;
 final zeroToSeven = List.generate(8, (index) => index);
 
 class Chessboard extends StatefulWidget {
-  final String fen;
   final double size;
   final types.Color orientation;
   final void Function(types.ShortMove move)? onMove;
@@ -21,18 +21,17 @@ class Chessboard extends StatefulWidget {
   final Color darkSquareColor;
   final Color highlightColor;
   final Color secondHighlightColor;
-  final ShortMove? lastMove;
+  final ChessboardController controller;
 
   Chessboard({
-    required this.fen,
     required this.size,
+    required this.controller,
     this.orientation = types.Color.WHITE,
     this.onMove,
     this.lightSquareColor = const Color.fromRGBO(240, 217, 181, 1),
     this.darkSquareColor = const Color.fromRGBO(181, 136, 99, 1),
     this.highlightColor = Colors.yellow,
     this.secondHighlightColor = Colors.orange,
-    this.lastMove,
   });
 
   @override
@@ -44,10 +43,22 @@ class Chessboard extends StatefulWidget {
 class _ChessboardState extends State<Chessboard> {
   types.HalfMove? _clickMove;
 
+  void playMove(types.ShortMove move) {
+    final chess = ch.Chess.fromFEN(widget.controller.fen);
+    chess.move({
+      'from': move.from,
+      'to': move.to,
+      'promotion': 'q',
+    });
+    widget.controller.lastMove = move;
+    widget.controller.fen = chess.fen;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final squareSize = widget.size / 8;
-    final pieceMap = getPieceMap(widget.fen);
+    final pieceMap = getPieceMap(widget.controller.fen);
 
     return Container(
       width: widget.size,
@@ -68,11 +79,13 @@ class _ChessboardState extends State<Chessboard> {
                 secondHighlightColor: widget.secondHighlightColor,
                 size: squareSize,
                 highlight: _clickMove?.square == square,
-                hightlightLastMove: widget.lastMove?.from == square ||
-                    widget.lastMove?.to == square,
+                hightlightLastMove:
+                    widget.controller.lastMove?.from == square ||
+                        widget.controller.lastMove?.to == square,
                 piece: pieceMap[square],
                 onDrop: (move) {
                   if (widget.onMove != null) {
+                    playMove(move);
                     widget.onMove!(move);
                     setClickMove(null);
                   }
