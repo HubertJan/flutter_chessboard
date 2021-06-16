@@ -19,6 +19,15 @@ class ChessboardController extends ChangeNotifier {
     _selectedSqaure = selectedSqaure;
   }
 
+  bool canMove(ShortMove move) {
+    var copy = _board.copy();
+    return copy.move({
+      'from': move.from,
+      'to': move.to,
+      'promotion': 'q',
+    });
+  }
+
   bool playMove(ShortMove move) {
     bool hasMoved = _board.move({
       'from': move.from,

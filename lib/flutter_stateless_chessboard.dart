@@ -75,7 +75,7 @@ class _ChessboardState extends State<Chessboard> {
                 canBeDragged: widget.controller.enableInteraction,
                 onDrop: (move) {
                   if (widget.onMove != null &&
-                      widget.controller.playMove(move)) {
+                      widget.controller.canMove(move)) {
                     widget.onMove!(move);
                     _clicked = null;
                     setState(() {});
@@ -96,7 +96,7 @@ class _ChessboardState extends State<Chessboard> {
                         to: halfMove.square,
                         promotion: types.PieceType.QUEEN,
                       );
-                      if (widget.controller.playMove(move)) {
+                      if (widget.controller.canMove(move)) {
                         widget.onMove!(move);
                       }
                       _clicked = null;
