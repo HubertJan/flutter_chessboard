@@ -66,7 +66,9 @@ class ChessboardController extends ChangeNotifier {
 
   String? get latestMoveAsSAN {
     if (_board.history.isNotEmpty) {
-      return _board.move_to_san(_board.history.last.move);
+      var copy = _board.copy();
+      copy.undo();
+      return copy.move_to_san(_board.history.last.move);
     }
     return null;
   }
