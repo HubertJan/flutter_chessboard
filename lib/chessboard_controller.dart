@@ -66,7 +66,7 @@ class ChessboardController extends ChangeNotifier {
 
   String? get latestMoveAsSAN {
     if (_board.history.isNotEmpty) {
-      return _board.history.last.toString();
+      return _board.move_to_san(_board.history.last.move);
     }
     return null;
   }
