@@ -55,12 +55,11 @@ class _HomePageState extends State<HomePage> {
             _lastMove = move;
             Future.delayed(Duration(milliseconds: 300)).then((_) {
               final nextMove = getRandomMove(_controller.fen);
-              _controller.lastMove = getShortMove(_controller.fen, nextMove);
-              if (nextMove != null) {
-                setState(() {
-                  _controller.fen = makeMove(_controller.fen, nextMove)!;
-                });
-              }
+              _controller.playMove(
+                  cb.ShortMove.fromSAN(san: nextMove!, fen: _controller.fen));
+              setState(() {
+                _controller.playMove(move);
+              });
             });
           },
         ),

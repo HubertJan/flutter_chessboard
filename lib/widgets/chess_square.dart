@@ -14,6 +14,7 @@ class ChessSquare extends StatelessWidget {
   final void Function(types.HalfMove move)? onClick;
   final bool highlight;
   final bool hightlightLastMove;
+  final bool canBeDragged;
 
   ChessSquare({
     this.name,
@@ -26,6 +27,7 @@ class ChessSquare extends StatelessWidget {
     this.onClick,
     this.hightlightLastMove = false,
     this.secondHighlightColor,
+    this.canBeDragged = true,
   });
 
   @override
@@ -58,6 +60,7 @@ class ChessSquare extends StatelessWidget {
             highlight: highlight || hightlightLastMove,
             child: piece != null
                 ? ChessPiece(
+                    canBeDragged: canBeDragged,
                     squareName: name,
                     squareColor: color,
                     piece: piece,

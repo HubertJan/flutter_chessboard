@@ -42,19 +42,7 @@ class Chessboard extends StatefulWidget {
 }
 
 class _ChessboardState extends State<Chessboard> {
-  types.HalfMove? _clickMove;
-
-  void playMove(types.ShortMove move) {
-    final chess = ch.Chess.fromFEN(widget.controller.fen);
-    chess.move({
-      'from': move.from,
-      'to': move.to,
-      'promotion': 'q',
-    });
-    widget.controller.lastMove = move;
-    widget.controller.fen = chess.fen;
-    setState(() {});
-  }
+  types.HalfMove? _clicked;
 
   @override
   Widget build(BuildContext context) {
@@ -79,34 +67,44 @@ class _ChessboardState extends State<Chessboard> {
                 highlightColor: widget.highlightColor,
                 secondHighlightColor: widget.secondHighlightColor,
                 size: squareSize,
-                highlight: _clickMove?.square == square,
+                highlight: _clicked?.square == square,
                 hightlightLastMove:
-                    widget.controller.lastMove?.from == square ||
-                        widget.controller.lastMove?.to == square,
+                    widget.controller.latestMove?.from == square ||
+                        widget.controller.latestMove?.to == square,
                 piece: pieceMap[square],
+                canBeDragged: widget.controller.enableInteraction,
                 onDrop: (move) {
-                  if (widget.onMove != null) {
-                    playMove(move);
+                  if (widget.onMove != null &&
+                      widget.controller.playMove(move)) {
                     widget.onMove!(move);
-                    setClickMove(null);
+                    _clicked = null;
+                    setState(() {});
                   }
                 },
                 onClick: (halfMove) {
-                  if (_clickMove != null) {
-                    if (_clickMove!.square == halfMove.square) {
-                      setClickMove(halfMove);
-                    } else if (_clickMove!.piece!.color ==
-                        halfMove.piece?.color) {
-                      setClickMove(halfMove);
+                  if (!widget.controller.enableInteraction) {
+                    return;
+                  }
+
+                  if (_clicked != null) {
+                    if (_clicked!.piece!.color == halfMove.piece?.color) {
+                      _clicked = halfMove;
+                      setState(() {});
                     } else {
-                      widget.onMove!(types.ShortMove(
-                        from: _clickMove!.square,
+                      var move = types.ShortMove(
+                        from: _clicked!.square,
                         to: halfMove.square,
                         promotion: types.PieceType.QUEEN,
-                      ));
+                      );
+                      if (widget.controller.playMove(move)) {
+                        widget.onMove!(move);
+                      }
+                      _clicked = null;
+                      setState(() {});
                     }
                   } else if (halfMove.piece != null) {
-                    setClickMove(halfMove);
+                    _clicked = halfMove;
+                    setState(() {});
                   }
                 },
               );
@@ -115,11 +113,5 @@ class _ChessboardState extends State<Chessboard> {
         }).toList(),
       ),
     );
-  }
-
-  void setClickMove(types.HalfMove? move) {
-    setState(() {
-      _clickMove = move;
-    });
   }
 }

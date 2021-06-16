@@ -1,3 +1,5 @@
+import 'package:chess/chess.dart' as ch;
+
 class Piece {
   PieceType type;
   final Color color;
@@ -72,11 +74,19 @@ class PieceType {
 }
 
 class ShortMove {
-  final String? from;
-  final String? to;
-  final PieceType? promotion;
+  late final String? from;
+  late final String? to;
+  late final PieceType? promotion;
 
   ShortMove({this.from, this.to, this.promotion});
+
+  ShortMove.fromSAN({required String san, required String fen}) {
+    final chess = ch.Chess.fromFEN(fen);
+    if (chess.move(san)) {
+      from = chess.history.last.move.fromAlgebraic;
+      to = chess.history.last.move.toAlgebraic;
+    }
+  }
 }
 
 class HalfMove {

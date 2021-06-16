@@ -1,38 +1,58 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_stateless_chessboard/types.dart' show ShortMove;
+import 'package:flutter_stateless_chessboard/types.dart'
+    show ShortMove, PieceType;
+
+import 'package:chess/chess.dart' as ch;
 
 class ChessboardController extends ChangeNotifier {
-  late String _fen;
-  ShortMove? _lastMove;
+  late ch.Chess _board;
   String? _selectedSqaure;
+  late bool enableInteraction;
 
   ChessboardController({
     required String fen,
-    ShortMove? lastMove,
     String? selectedSqaure,
+    this.enableInteraction = true,
   }) {
-    _fen = fen;
+    _board = ch.Chess.fromFEN(fen);
     _selectedSqaure = selectedSqaure;
-    _lastMove = lastMove;
+  }
+
+  bool playMove(ShortMove move) {
+    bool hasMoved = _board.move({
+      'from': move.from,
+      'to': move.to,
+      'promotion': 'q',
+    });
+    if (hasMoved) {
+      notifyListeners();
+    }
+    return hasMoved;
+  }
+
+  void undoMove() {
+    _board.undo();
   }
 
   String get fen {
-    return _fen;
+    return _board.fen;
   }
 
-  set fen(String fen) {
-    _fen = fen;
-    notifyListeners();
+  void setupNewBoard(String) {
+    _board = ch.Chess.fromFEN(fen);
   }
 
-  ShortMove? get lastMove {
-    return _lastMove;
-  }
-
-  set lastMove(ShortMove? lastMove) {
-    _lastMove = lastMove;
-    notifyListeners();
+  ShortMove? get latestMove {
+    if (_board.history.isNotEmpty) {
+      return ShortMove(
+          from: _board.history.last.move.fromAlgebraic,
+          to: _board.history.last.move.toAlgebraic,
+          promotion: _board.history.last.move.promotion != null
+              ? PieceType.fromString(_board.history.last.move.promotion!.name)
+              : null);
+    }
+    return null;
   }
 
   String? get selectedSqaure {

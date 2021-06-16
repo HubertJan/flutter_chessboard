@@ -8,24 +8,27 @@ class ChessPiece extends StatelessWidget {
   final Color squareColor;
   final types.Piece? piece;
   final double size;
+  final bool canBeDragged;
 
-  ChessPiece({
-    required this.squareName,
-    required this.squareColor,
-    required this.piece,
-    required this.size,
-  });
+  ChessPiece(
+      {required this.squareName,
+      required this.squareColor,
+      required this.piece,
+      required this.size,
+      required this.canBeDragged});
 
   @override
   Widget build(BuildContext context) {
     final pieceWidget = _buildPiece()!;
 
-    return Draggable<types.HalfMove>(
-      data: types.HalfMove(squareName, piece),
-      child: pieceWidget,
-      feedback: pieceWidget,
-      childWhenDragging: SizedBox(),
-    );
+    return canBeDragged
+        ? Draggable<types.HalfMove>(
+            data: types.HalfMove(squareName, piece),
+            child: pieceWidget,
+            feedback: pieceWidget,
+            childWhenDragging: SizedBox(),
+          )
+        : pieceWidget;
   }
 
   Widget? _buildPiece() {
